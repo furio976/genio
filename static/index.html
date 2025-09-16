@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IA d'Étude Personnalisée</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .main-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .upload-section {
+            padding: 40px;
+            text-align: center;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 60px 20px;
+            background: #f8f9ff;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: #5a67d8;
+            background: #f0f2ff;
+        }
+
+        .upload-area.dragover {
+            border-color: #4c51bf;
+            background: #e6f3ff;
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .upload-text h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .upload-text p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .sessions-section {
+            padding: 40px;
+        }
+
+        .sessions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .sessions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .session-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .session-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .session-card h4 {
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .session-card p {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .session-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-small {
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            border-radius: 20px;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #667eea;
+            color: #667eea;
+        }
+
+        .btn-outline:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 20px;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            width: 90%;
+        }
+
+        .modal-header {
+            padding: 30px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .question-card {
+            background: #f8f9ff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .flashcard {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .flashcard:hover {
+            transform: scale(1.02);
+        }
+
+        .flashcard-front, .flashcard-back {
+            padding: 25px;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .flashcard-front {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-weight: 500;
+        }
+
+        .flashcard-back {
+            background: #f8f9ff;
+            color: #333;
+            display: none;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+            
+            .upload-section, .sessions-section {
+                padding: 20px;
+            }
+            
+            .sessions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-brain"></i> IA d'Étude</h1>
+            <p>Uploadez vos cours et laissez l'IA vous aider à étudier efficacement</p>
+        </div>
+
+        <div class="main-card">
+            <div class="upload-section">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <div class="upload-text">
+                        <h3>Glissez votre fichier ici</h3>
+                        <p>ou cliquez pour sélectionner (PDF, DOCX, TXT, MD)</p>
+                        <button class="btn" onclick="document.getElementById('fileInput').click()">
+                            <i class="fas fa-file-plus"></i>
+                            Choisir un fichier
+                        </button>
+                    </div>
+                </div>
+                <input type="file" id="fileInput" class="file-input" accept=".pdf,.docx,.txt,.md">
+                <div class="progress-bar" id="progressBar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div id="uploadStatus"></div>
+            </div>
+
+            <div class="sessions-section">
+                <div class="sessions-header">
+                    <h2><i class="fas fa-history"></i> Mes Sessions d'Étude</h2>
+                    <button class="btn btn-outline" onclick="loadSessions()">
+                        <i class="fas fa-sync-alt"></i>
+                        Actualiser
+                    </button>
+                </div>
+                <div class="sessions-grid" id="sessionsGrid">
+                    <p style="text-align: center; color: #666; grid-column: 1/-1;">
+                        Aucune session trouvée. Uploadez un fichier pour commencer !
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal pour afficher les résultats -->
+    <div class="modal" id="resultModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Résultats</h3>
+                <button class="close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Contenu dynamique -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSessionId = null;
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            setupFileUpload();
+            loadSessions();
+        });
+
+        function setupFileUpload() {
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('fileInput');
+
+            // Drag & Drop
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+
+            uploadArea.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+            });
+
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFileUpload(files[0]);
+                }
+            });
+
+            // Click upload
+            uploadArea.addEventListener('click', function() {
+                fileInput.click();
+            });
+
+            fileInput.addEventListener('change', function(e) {
+                if (e.target.files.length > 0) {
+                    handleFileUpload(e.target.files[0]);
+                }
+            });
+        }
+
+        async function handleFileUpload(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const progressBar = document.getElementById('progressBar');
+            const progressFill = document.getElementById('progressFill');
+            const uploadStatus = document.getElementById('uploadStatus');
+
+            try {
+                progressBar.style.display = 'block';
+                progressFill.style.width = '20%';
+
+                uploadStatus.innerHTML = '<div class="alert alert-info"><i class="fas fa-spinner fa-spin"></i> Upload en cours...</div>';
+
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                progressFill.style.width = '100%';
+
+                if (response.ok) {
+                    const result = await response.json();
+                    currentSessionId = result.session_id;
+                    
+                    uploadStatus.innerHTML = `
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle"></i>
+                            Fichier "${result.filename}" traité avec succès ! 
+                            ${result.content_length} caractères extraits.
+                        </div>
+                    `;
+
+                    setTimeout(() => {
+                        loadSessions();
+                        progressBar.style.display = 'none';
+                        uploadStatus.innerHTML = '';
+                    }, 2000);
+
+                } else {
+                    const error = await response.json();
+                    throw new Error(error.detail);
+                }
+
+            } catch (error) {
+                uploadStatus.innerHTML = `
+                    <div class="alert alert-error">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Erreur: ${error.message}
+                    </div>
+                `;
+                progressBar.style.display = 'none';
+            }
+        }
+
+        async function loadSessions() {
+            try {
+                const response = await fetch('/sessions');
+                const data = await response.json();
+                
+                const sessionsGrid = document.getElementById('sessionsGrid');
+                
+                if (data.sessions.length === 0) {
+                    sessionsGrid.innerHTML = `
+                        <p style="text-align: center; color: #666; grid-column: 1/-1;">
+                            Aucune session trouvée. Uploadez un fichier pour commencer !
+                        </p>
+                    `;
+                    return;
+                }
+
+                sessionsGrid.innerHTML = '';
+                
+                data.sessions.forEach(session => {
+                    const sessionCard = document.createElement('div');
+                    sessionCard.className = 'session-card';
+                    sessionCard.innerHTML = `
+                        <h4><i class="fas fa-file-alt"></i> ${session.filename}</h4>
+                        <p><i class="fas fa-clock"></i> ${new Date(session.created_at).toLocaleString('fr-FR')}</p>
+                        <div class="session-actions">
+                            <button class="btn btn-small" onclick="generateSummary('${session.id}')">
+                                <i class="fas fa-file-text"></i> Résumé
+                            </button>
+                            <button class="btn btn-small btn-outline" onclick="generateQuestions('${session.id}')">
+                                <i class="fas fa-question-circle"></i> Questions
+                            </button>
+                            <button class="btn btn-small btn-outline" onclick="generateQuiz('${session.id}')">
+                                <i class="fas fa-clipboard-list"></i> Quiz
+                            </button>
+                            <button class="btn btn-small btn-outline" onclick="generateFlashcards('${session.id}')">
+                                <i class="fas fa-layer-group"></i> Cartes
+                            </button>
+                        </div>
+                    `;
+                    sessionsGrid.appendChild(sessionCard);
+                });
+
+            } catch (error) {
+                console.error('Erreur lors du chargement des sessions:', error);
+            }
+        }
+
+        async function generateSummary(sessionId) {
+            await makeRequest(`/study/${sessionId}/summary`, 'POST', {}, 'Génération du résumé...', displaySummary);
+        }
+
+        async function generateQuestions(sessionId) {
+            const formData = new FormData();
+            formData.append('num_questions', '8');
+            formData.append('difficulty', 'medium');
+            
+            await makeRequest(`/study/${sessionId}/questions`, 'POST', formData, 'Génération des questions...', displayQuestions);
+        }
+
+        async function generateQuiz(sessionId) {
+            const formData = new FormData();
+            formData.append('num_questions', '10');
+            formData.append('question_type', 'mixed');
+            
+            await makeRequest(`/study/${sessionId}/quiz`, 'POST', formData, 'Génération du quiz...', displayQuiz);
+        }
+
+        async function generateFlashcards(sessionId) {
+            const formData = new FormData();
+            formData.append('num_cards', '12');
+            
+            await makeRequest(`/study/${sessionId}/flashcards`, 'POST', formData, 'Génération des cartes...', displayFlashcards);
+        }
+
+        async function makeRequest(url, method, body, loadingMessage, displayFunction) {
+            try {
+                showModal('Traitement en cours...', `<div style="text-align: center;"><div class="loading"></div> ${loadingMessage}</div>`);
+
+                const options = {
+                    method: method,
+                    body: body instanceof FormData ? body : JSON.stringify(body)
+                };
+
+                if (!(body instanceof FormData)) {
+                    options.headers = {'Content-Type': 'application/json'};
+                }
+
+                const response = await fetch(url, options);
+                const data = await response.json();
+
+                if (response.ok) {
+                    displayFunction(data);
+                } else {
+                    throw new Error(data.detail || 'Erreur inconnue');
+                }
+
+            } catch (error) {
+                showModal('Erreur', `<div class="alert alert-error"><i class="fas fa-exclamation-triangle"></i> ${error.message}</div>`);
+            }
+        }
+
+        function displaySummary(data) {
+            const content = `
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i> Résumé généré avec succès !
+                </div>
+                <h4><i class="fas fa-file-text"></i> Résumé</h4>
+                <p style="margin-bottom: 20px; line-height: 1.6;">${data.summary.content}</p>
+                
+                <h4><i class="fas fa-star"></i> Points Clés</h4>
+                <ul style="margin-bottom: 20px;">
+                    ${data.summary.key_points.map(point => `<li>${point}</li>`).join('')}
+                </ul>
+                
+                <h4><i class="fas fa-tags"></i> Sujets Couverts</h4>
+                <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                    ${data.summary.topics_covered.map(topic => 
+                        `<span style="background: #667eea; color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.9rem;">${topic}</span>`
+                    ).join('')}
+                </div>
+            `;
+            showModal('Résumé du Cours', content);
+        }
+
+        function displayQuestions(data) {
+            const content = `
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i> ${data.questions.length} questions générées !
+                </div>
+                ${data.questions.map((question, index) => `
+                    <div class="question-card">
+                        <h5><strong>Question ${index + 1}:</strong> ${question.question}</h5>
+                        ${question.options ? `
+                            <ul style="margin: 10px 0;">
+                                ${question.options.map(option => `<li>${option}</li>`).join('')}
+                            </ul>
+                        ` : ''}
+                        <p><strong>Réponse:</strong> ${question.correct_answer}</p>
+                        ${question.explanation ? `<p><em>${question.explanation}</em></p>` : ''}
+                    </div>
+                `).join('')}
+            `;
+            showModal('Questions d\'Étude', content);
+        }
+
+        function displayQuiz(data) {
+            displayQuestions(data); // Même affichage pour l'instant
+        }
+
+        function displayFlashcards(data) {
+            const content = `
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i> ${data.flashcards.length} cartes générées !
+                </div>
+                <p style="margin-bottom: 20px;"><em>Cliquez sur une carte pour voir la réponse</em></p>
+                ${data.flashcards.map((card, index) => `
+                    <div class="flashcard" onclick="flipCard(${index})">
+                        <div class="flashcard-front" id="card-front-${index}">
+                            ${card.front}
+                        </div>
+                        <div class="flashcard-back" id="card-back-${index}">
+                            ${card.back}
+                        </div>
+                    </div>
+                `).join('')}
+            `;
+            showModal('Cartes Mémoire', content);
+        }
+
+        function flipCard(index) {
+            const front = document.getElementById(`card-front-${index}`);
+            const back = document.getElementById(`card-back-${index}`);
+            
+            if (front.style.display === 'none') {
+                front.style.display = 'flex';
+                back.style.display = 'none';
+            } else {
+                front.style.display = 'none';
+                back.style.display = 'flex';
+            }
+        }
+
+        function showModal(title, content) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalBody').innerHTML = content;
+            document.getElementById('resultModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('resultModal').style.display = 'none';
+        }
+
+        // Fermer le modal en cliquant à l'extérieur
+        window.onclick = function(event) {
+            const modal = document.getElementById('resultModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>
