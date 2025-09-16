@@ -1,0 +1,10 @@
+streamlit>=1.37.0
+pydantic>=2.7.0
+pypdf>=4.2.0
+python-docx>=1.1.0
+sumy>=0.11.0
+nltk>=3.9
+rake-nltk>=1.0.6
+openai>=1.40.0
+rich>=13.7.1
+pyyaml>=6.0.2
