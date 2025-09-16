@@ -217,4 +217,23 @@ async def load_session(session_id: str) -> StudySession:
         return StudySession(**session_data)
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    import sys
+    
+    # Configuration pour déploiement public
+    host = "0.0.0.0"
+    port = int(os.environ.get("PORT", 8000))
+    
+    print("🧠 IA d'Étude Personnalisée")
+    print("=" * 50)
+    print(f"🌐 Serveur démarré sur {host}:{port}")
+    print("📁 Fichiers acceptés: PDF, DOCX, TXT, MD")
+    print("🤖 Mode démo activé (IA complète avec clé OpenAI)")
+    print("=" * 50)
+    
+    uvicorn.run(
+        app, 
+        host=host, 
+        port=port,
+        reload=False,
+        access_log=True
+    )
