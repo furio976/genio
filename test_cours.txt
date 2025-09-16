@@ -1,0 +1,57 @@
+# Cours de Mathématiques : Les Fonctions
+
+## Introduction aux Fonctions
+
+Une fonction est une relation entre deux ensembles qui associe à chaque élément du premier ensemble (appelé domaine) au plus un élément du second ensemble (appelé codomaine).
+
+## Définition Formelle
+
+Soit f : A → B une fonction de l'ensemble A vers l'ensemble B.
+Pour tout x ∈ A, il existe un unique y ∈ B tel que f(x) = y.
+
+## Types de Fonctions
+
+### 1. Fonction Linéaire
+Une fonction linéaire est de la forme f(x) = ax où a est une constante.
+
+Exemple : f(x) = 2x
+
+### 2. Fonction Affine
+Une fonction affine est de la forme f(x) = ax + b où a et b sont des constantes.
+
+Exemple : f(x) = 3x + 5
+
+### 3. Fonction Quadratique
+Une fonction quadratique est de la forme f(x) = ax² + bx + c où a ≠ 0.
+
+Exemple : f(x) = x² - 4x + 3
+
+## Propriétés des Fonctions
+
+### Injectivité
+Une fonction f est injective si pour tout x₁, x₂ dans le domaine :
+f(x₁) = f(x₂) ⟹ x₁ = x₂
+
+### Surjectivité
+Une fonction f : A → B est surjective si pour tout y ∈ B, il existe x ∈ A tel que f(x) = y.
+
+### Bijectivité
+Une fonction est bijective si elle est à la fois injective et surjective.
+
+## Applications
+
+Les fonctions sont utilisées dans de nombreux domaines :
+- Physique : modélisation des phénomènes
+- Économie : fonctions de coût et de demande
+- Informatique : algorithmes et programmation
+- Ingénierie : analyse des systèmes
+
+## Exercices
+
+1. Déterminer si f(x) = 2x + 1 est injective
+2. Trouver l'image de l'ensemble [0, 5] par f(x) = x²
+3. Résoudre f(x) = 0 pour f(x) = x² - 9
+
+## Conclusion
+
+Les fonctions constituent un concept fondamental en mathématiques, servant de base à l'analyse, à l'algèbre et à de nombreuses autres branches des mathématiques.
